@@ -1,0 +1,17 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [1.0.0] — 2026-06-15
+
+### Added
+- Initial release of cortex-plugin-teams
+- `teams_send_message` — Send messages to channels and chats
+- `teams_read_messages` — Read messages from channels and chats
+- `teams_list_channels` — List team channels
+- `teams_create_meeting` — Create Teams meetings
+- `teams_send_notification` — Send user notifications
+- Microsoft Teams (Entra ID) configuration UI

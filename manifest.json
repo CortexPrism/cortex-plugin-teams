@@ -1,0 +1,176 @@
+{
+  "name": "cortex-plugin-teams",
+  "version": "1.0.0",
+  "description": "Cortex agent as a Teams bot",
+  "kind": "esm",
+  "entryPoint": "mod.ts",
+  "runtime": "deno",
+  "author": "CortexPrism",
+  "license": "MIT",
+  "repository": "https://github.com/CortexPrism/cortex-plugin-teams",
+  "homepage": "",
+  "capabilities": [
+    "tools",
+    "network:fetch"
+  ],
+  "tools": [
+    {
+      "name": "teams_send_message",
+      "description": "Send a message to a channel or chat",
+      "params": [
+        {
+          "name": "target_id",
+          "type": "string",
+          "description": "Target channel or chat ID",
+          "required": true
+        },
+        {
+          "name": "target_type",
+          "type": "string",
+          "description": "Type of target",
+          "required": true,
+          "enum": ["channel", "chat"]
+        },
+        {
+          "name": "content",
+          "type": "string",
+          "description": "Message content",
+          "required": true
+        },
+        {
+          "name": "adaptive_card",
+          "type": "string",
+          "description": "JSON string of adaptive card",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "teams_read_messages",
+      "description": "Read messages from a channel or chat",
+      "params": [
+        {
+          "name": "target_id",
+          "type": "string",
+          "description": "Target channel or chat ID",
+          "required": true
+        },
+        {
+          "name": "target_type",
+          "type": "string",
+          "description": "Type of target",
+          "required": true,
+          "enum": ["channel", "chat"]
+        },
+        {
+          "name": "limit",
+          "type": "number",
+          "description": "Maximum number of messages",
+          "required": false,
+          "default": 20
+        }
+      ]
+    },
+    {
+      "name": "teams_list_channels",
+      "description": "List team channels",
+      "params": [
+        {
+          "name": "team_id",
+          "type": "string",
+          "description": "Team ID",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "teams_create_meeting",
+      "description": "Create a Teams meeting",
+      "params": [
+        {
+          "name": "subject",
+          "type": "string",
+          "description": "Meeting subject",
+          "required": true
+        },
+        {
+          "name": "start_time",
+          "type": "string",
+          "description": "Start time in ISO 8601 format",
+          "required": true
+        },
+        {
+          "name": "end_time",
+          "type": "string",
+          "description": "End time in ISO 8601 format",
+          "required": true
+        },
+        {
+          "name": "attendees",
+          "type": "string",
+          "description": "Comma-separated email addresses",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "teams_send_notification",
+      "description": "Send a notification to a user",
+      "params": [
+        {
+          "name": "user_id",
+          "type": "string",
+          "description": "Target user ID",
+          "required": true
+        },
+        {
+          "name": "message",
+          "type": "string",
+          "description": "Notification message",
+          "required": true
+        },
+        {
+          "name": "urgency",
+          "type": "string",
+          "description": "Urgency level",
+          "required": true,
+          "enum": ["normal", "high", "urgent"]
+        }
+      ]
+    }
+  ],
+  "ui": {
+    "section": "Teams",
+    "fields": [
+      {
+        "key": "teamsTenantId",
+        "label": "Teams Tenant ID",
+        "type": "text",
+        "description": "Microsoft Teams tenant ID",
+        "required": true
+      },
+      {
+        "key": "teamsClientId",
+        "label": "Teams Client ID",
+        "type": "text",
+        "description": "Microsoft Entra ID application client ID",
+        "required": true
+      },
+      {
+        "key": "teamsClientSecret",
+        "label": "Teams Client Secret",
+        "type": "secret",
+        "description": "Microsoft Entra ID application client secret",
+        "required": true
+      }
+    ]
+  },
+  "dependencies": {},
+  "peerDependencies": {
+    "cortex": ">=1.0.0"
+  },
+  "aiDisclosure": {
+    "tools": ["Claude Code (Anthropic)"],
+    "humanReview": true
+  }
+}
