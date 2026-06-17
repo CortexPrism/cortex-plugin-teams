@@ -1,4 +1,4 @@
-import type { Tool, ToolContext, PluginContext, ToolCallResult } from 'cortex/plugins';
+import type { PluginContext, Tool, ToolCallResult, ToolContext } from './types.ts';
 
 let pluginConfig: Record<string, unknown> = {};
 
@@ -13,10 +13,26 @@ const teamsSendMessageTool: Tool = {
     name: 'teams_send_message',
     description: 'Send a message to a channel or chat',
     params: [
-      { name: 'target_id', type: 'string', description: 'Target channel or chat ID', required: true },
-      { name: 'target_type', type: 'string', description: 'Type of target', required: true, enum: ['channel', 'chat'] },
+      {
+        name: 'target_id',
+        type: 'string',
+        description: 'Target channel or chat ID',
+        required: true,
+      },
+      {
+        name: 'target_type',
+        type: 'string',
+        description: 'Type of target',
+        required: true,
+        enum: ['channel', 'chat'],
+      },
       { name: 'content', type: 'string', description: 'Message content', required: true },
-      { name: 'adaptive_card', type: 'string', description: 'JSON string of adaptive card', required: false },
+      {
+        name: 'adaptive_card',
+        type: 'string',
+        description: 'JSON string of adaptive card',
+        required: false,
+      },
     ],
     capabilities: ['network:fetch'],
   },
@@ -28,16 +44,34 @@ const teamsSendMessageTool: Tool = {
       const content = args.content as string;
 
       if (!targetId || !targetType || !content) {
-        return { toolName: 'teams_send_message', success: false, output: '', error: 'target_id, target_type, and content are required', durationMs: Date.now() - start };
+        return {
+          toolName: 'teams_send_message',
+          success: false,
+          output: '',
+          error: 'target_id, target_type, and content are required',
+          durationMs: Date.now() - start,
+        };
       }
 
       if (!['channel', 'chat'].includes(targetType)) {
-        return { toolName: 'teams_send_message', success: false, output: '', error: 'target_type must be "channel" or "chat"', durationMs: Date.now() - start };
+        return {
+          toolName: 'teams_send_message',
+          success: false,
+          output: '',
+          error: 'target_type must be "channel" or "chat"',
+          durationMs: Date.now() - start,
+        };
       }
 
       const accessToken = pluginConfig.teamsClientSecret as string;
       if (!accessToken) {
-        return { toolName: 'teams_send_message', success: false, output: '', error: 'Teams not configured. Set teamsTenantId, teamsClientId, and teamsClientSecret.', durationMs: Date.now() - start };
+        return {
+          toolName: 'teams_send_message',
+          success: false,
+          output: '',
+          error: 'Teams not configured. Set teamsTenantId, teamsClientId, and teamsClientSecret.',
+          durationMs: Date.now() - start,
+        };
       }
 
       const messageBody: Record<string, unknown> = {
@@ -51,15 +85,25 @@ const teamsSendMessageTool: Tool = {
             content: JSON.parse(args.adaptive_card as string),
           }];
         } catch {
-          return { toolName: 'teams_send_message', success: false, output: '', error: 'adaptive_card must be valid JSON', durationMs: Date.now() - start };
+          return {
+            toolName: 'teams_send_message',
+            success: false,
+            output: '',
+            error: 'adaptive_card must be valid JSON',
+            durationMs: Date.now() - start,
+          };
         }
       }
 
       let endpoint: string;
       if (targetType === 'channel') {
-        endpoint = `https://graph.microsoft.com/v1.0/teams/${encodeURIComponent(targetId)}/channels/messages`;
+        endpoint = `https://graph.microsoft.com/v1.0/teams/${
+          encodeURIComponent(targetId)
+        }/channels/messages`;
       } else {
-        endpoint = `https://graph.microsoft.com/v1.0/chats/${encodeURIComponent(targetId)}/messages`;
+        endpoint = `https://graph.microsoft.com/v1.0/chats/${
+          encodeURIComponent(targetId)
+        }/messages`;
       }
 
       const response = await fetch(endpoint, {
@@ -69,13 +113,30 @@ const teamsSendMessageTool: Tool = {
       });
 
       if (!response.ok) {
-        return { toolName: 'teams_send_message', success: false, output: '', error: `Teams API error: ${response.status}`, durationMs: Date.now() - start };
+        return {
+          toolName: 'teams_send_message',
+          success: false,
+          output: '',
+          error: `Teams API error: ${response.status}`,
+          durationMs: Date.now() - start,
+        };
       }
 
       const data = await response.json();
-      return { toolName: 'teams_send_message', success: true, output: JSON.stringify(data), durationMs: Date.now() - start };
+      return {
+        toolName: 'teams_send_message',
+        success: true,
+        output: JSON.stringify(data),
+        durationMs: Date.now() - start,
+      };
     } catch (error) {
-      return { toolName: 'teams_send_message', success: false, output: '', error: `Failed to send message: ${error instanceof Error ? error.message : String(error)}`, durationMs: Date.now() - start };
+      return {
+        toolName: 'teams_send_message',
+        success: false,
+        output: '',
+        error: `Failed to send message: ${error instanceof Error ? error.message : String(error)}`,
+        durationMs: Date.now() - start,
+      };
     }
   },
 };
@@ -85,9 +146,26 @@ const teamsReadMessagesTool: Tool = {
     name: 'teams_read_messages',
     description: 'Read messages from a channel or chat',
     params: [
-      { name: 'target_id', type: 'string', description: 'Target channel or chat ID', required: true },
-      { name: 'target_type', type: 'string', description: 'Type of target', required: true, enum: ['channel', 'chat'] },
-      { name: 'limit', type: 'number', description: 'Maximum number of messages', required: false, default: 20 },
+      {
+        name: 'target_id',
+        type: 'string',
+        description: 'Target channel or chat ID',
+        required: true,
+      },
+      {
+        name: 'target_type',
+        type: 'string',
+        description: 'Type of target',
+        required: true,
+        enum: ['channel', 'chat'],
+      },
+      {
+        name: 'limit',
+        type: 'number',
+        description: 'Maximum number of messages',
+        required: false,
+        default: 20,
+      },
     ],
     capabilities: ['network:fetch'],
   },
@@ -98,25 +176,47 @@ const teamsReadMessagesTool: Tool = {
       const targetType = args.target_type as string;
 
       if (!targetId || !targetType) {
-        return { toolName: 'teams_read_messages', success: false, output: '', error: 'target_id and target_type are required', durationMs: Date.now() - start };
+        return {
+          toolName: 'teams_read_messages',
+          success: false,
+          output: '',
+          error: 'target_id and target_type are required',
+          durationMs: Date.now() - start,
+        };
       }
 
       if (!['channel', 'chat'].includes(targetType)) {
-        return { toolName: 'teams_read_messages', success: false, output: '', error: 'target_type must be "channel" or "chat"', durationMs: Date.now() - start };
+        return {
+          toolName: 'teams_read_messages',
+          success: false,
+          output: '',
+          error: 'target_type must be "channel" or "chat"',
+          durationMs: Date.now() - start,
+        };
       }
 
       const accessToken = pluginConfig.teamsClientSecret as string;
       if (!accessToken) {
-        return { toolName: 'teams_read_messages', success: false, output: '', error: 'Teams not configured', durationMs: Date.now() - start };
+        return {
+          toolName: 'teams_read_messages',
+          success: false,
+          output: '',
+          error: 'Teams not configured',
+          durationMs: Date.now() - start,
+        };
       }
 
       const limit = (args.limit as number) ?? 20;
 
       let endpoint: string;
       if (targetType === 'channel') {
-        endpoint = `https://graph.microsoft.com/v1.0/teams/${encodeURIComponent(targetId)}/channels/messages?$top=${limit}`;
+        endpoint = `https://graph.microsoft.com/v1.0/teams/${
+          encodeURIComponent(targetId)
+        }/channels/messages?$top=${limit}`;
       } else {
-        endpoint = `https://graph.microsoft.com/v1.0/chats/${encodeURIComponent(targetId)}/messages?$top=${limit}`;
+        endpoint = `https://graph.microsoft.com/v1.0/chats/${
+          encodeURIComponent(targetId)
+        }/messages?$top=${limit}`;
       }
 
       const response = await fetch(endpoint, {
@@ -124,13 +224,30 @@ const teamsReadMessagesTool: Tool = {
       });
 
       if (!response.ok) {
-        return { toolName: 'teams_read_messages', success: false, output: '', error: `Teams API error: ${response.status}`, durationMs: Date.now() - start };
+        return {
+          toolName: 'teams_read_messages',
+          success: false,
+          output: '',
+          error: `Teams API error: ${response.status}`,
+          durationMs: Date.now() - start,
+        };
       }
 
       const data = await response.json();
-      return { toolName: 'teams_read_messages', success: true, output: JSON.stringify(data), durationMs: Date.now() - start };
+      return {
+        toolName: 'teams_read_messages',
+        success: true,
+        output: JSON.stringify(data),
+        durationMs: Date.now() - start,
+      };
     } catch (error) {
-      return { toolName: 'teams_read_messages', success: false, output: '', error: `Failed to read messages: ${error instanceof Error ? error.message : String(error)}`, durationMs: Date.now() - start };
+      return {
+        toolName: 'teams_read_messages',
+        success: false,
+        output: '',
+        error: `Failed to read messages: ${error instanceof Error ? error.message : String(error)}`,
+        durationMs: Date.now() - start,
+      };
     }
   },
 };
@@ -149,12 +266,24 @@ const teamsListChannelsTool: Tool = {
     try {
       const teamId = args.team_id as string;
       if (!teamId) {
-        return { toolName: 'teams_list_channels', success: false, output: '', error: 'team_id is required', durationMs: Date.now() - start };
+        return {
+          toolName: 'teams_list_channels',
+          success: false,
+          output: '',
+          error: 'team_id is required',
+          durationMs: Date.now() - start,
+        };
       }
 
       const accessToken = pluginConfig.teamsClientSecret as string;
       if (!accessToken) {
-        return { toolName: 'teams_list_channels', success: false, output: '', error: 'Teams not configured', durationMs: Date.now() - start };
+        return {
+          toolName: 'teams_list_channels',
+          success: false,
+          output: '',
+          error: 'Teams not configured',
+          durationMs: Date.now() - start,
+        };
       }
 
       const response = await fetch(
@@ -163,13 +292,30 @@ const teamsListChannelsTool: Tool = {
       );
 
       if (!response.ok) {
-        return { toolName: 'teams_list_channels', success: false, output: '', error: `Teams API error: ${response.status}`, durationMs: Date.now() - start };
+        return {
+          toolName: 'teams_list_channels',
+          success: false,
+          output: '',
+          error: `Teams API error: ${response.status}`,
+          durationMs: Date.now() - start,
+        };
       }
 
       const data = await response.json();
-      return { toolName: 'teams_list_channels', success: true, output: JSON.stringify(data), durationMs: Date.now() - start };
+      return {
+        toolName: 'teams_list_channels',
+        success: true,
+        output: JSON.stringify(data),
+        durationMs: Date.now() - start,
+      };
     } catch (error) {
-      return { toolName: 'teams_list_channels', success: false, output: '', error: `Failed to list channels: ${error instanceof Error ? error.message : String(error)}`, durationMs: Date.now() - start };
+      return {
+        toolName: 'teams_list_channels',
+        success: false,
+        output: '',
+        error: `Failed to list channels: ${error instanceof Error ? error.message : String(error)}`,
+        durationMs: Date.now() - start,
+      };
     }
   },
 };
@@ -180,9 +326,24 @@ const teamsCreateMeetingTool: Tool = {
     description: 'Create a Teams meeting',
     params: [
       { name: 'subject', type: 'string', description: 'Meeting subject', required: true },
-      { name: 'start_time', type: 'string', description: 'Start time in ISO 8601 format', required: true },
-      { name: 'end_time', type: 'string', description: 'End time in ISO 8601 format', required: true },
-      { name: 'attendees', type: 'string', description: 'Comma-separated email addresses', required: false },
+      {
+        name: 'start_time',
+        type: 'string',
+        description: 'Start time in ISO 8601 format',
+        required: true,
+      },
+      {
+        name: 'end_time',
+        type: 'string',
+        description: 'End time in ISO 8601 format',
+        required: true,
+      },
+      {
+        name: 'attendees',
+        type: 'string',
+        description: 'Comma-separated email addresses',
+        required: false,
+      },
     ],
     capabilities: ['network:fetch'],
   },
@@ -194,12 +355,24 @@ const teamsCreateMeetingTool: Tool = {
       const endTime = args.end_time as string;
 
       if (!subject || !startTime || !endTime) {
-        return { toolName: 'teams_create_meeting', success: false, output: '', error: 'subject, start_time, and end_time are required', durationMs: Date.now() - start };
+        return {
+          toolName: 'teams_create_meeting',
+          success: false,
+          output: '',
+          error: 'subject, start_time, and end_time are required',
+          durationMs: Date.now() - start,
+        };
       }
 
       const accessToken = pluginConfig.teamsClientSecret as string;
       if (!accessToken) {
-        return { toolName: 'teams_create_meeting', success: false, output: '', error: 'Teams not configured', durationMs: Date.now() - start };
+        return {
+          toolName: 'teams_create_meeting',
+          success: false,
+          output: '',
+          error: 'Teams not configured',
+          durationMs: Date.now() - start,
+        };
       }
 
       const meetingBody: Record<string, unknown> = {
@@ -225,13 +398,32 @@ const teamsCreateMeetingTool: Tool = {
       );
 
       if (!response.ok) {
-        return { toolName: 'teams_create_meeting', success: false, output: '', error: `Teams API error: ${response.status}`, durationMs: Date.now() - start };
+        return {
+          toolName: 'teams_create_meeting',
+          success: false,
+          output: '',
+          error: `Teams API error: ${response.status}`,
+          durationMs: Date.now() - start,
+        };
       }
 
       const data = await response.json();
-      return { toolName: 'teams_create_meeting', success: true, output: JSON.stringify(data), durationMs: Date.now() - start };
+      return {
+        toolName: 'teams_create_meeting',
+        success: true,
+        output: JSON.stringify(data),
+        durationMs: Date.now() - start,
+      };
     } catch (error) {
-      return { toolName: 'teams_create_meeting', success: false, output: '', error: `Failed to create meeting: ${error instanceof Error ? error.message : String(error)}`, durationMs: Date.now() - start };
+      return {
+        toolName: 'teams_create_meeting',
+        success: false,
+        output: '',
+        error: `Failed to create meeting: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+        durationMs: Date.now() - start,
+      };
     }
   },
 };
@@ -243,7 +435,13 @@ const teamsSendNotificationTool: Tool = {
     params: [
       { name: 'user_id', type: 'string', description: 'Target user ID', required: true },
       { name: 'message', type: 'string', description: 'Notification message', required: true },
-      { name: 'urgency', type: 'string', description: 'Urgency level', required: true, enum: ['normal', 'high', 'urgent'] },
+      {
+        name: 'urgency',
+        type: 'string',
+        description: 'Urgency level',
+        required: true,
+        enum: ['normal', 'high', 'urgent'],
+      },
     ],
     capabilities: ['network:fetch'],
   },
@@ -255,16 +453,34 @@ const teamsSendNotificationTool: Tool = {
       const urgency = args.urgency as string;
 
       if (!userId || !message || !urgency) {
-        return { toolName: 'teams_send_notification', success: false, output: '', error: 'user_id, message, and urgency are required', durationMs: Date.now() - start };
+        return {
+          toolName: 'teams_send_notification',
+          success: false,
+          output: '',
+          error: 'user_id, message, and urgency are required',
+          durationMs: Date.now() - start,
+        };
       }
 
       if (!['normal', 'high', 'urgent'].includes(urgency)) {
-        return { toolName: 'teams_send_notification', success: false, output: '', error: 'urgency must be one of: normal, high, urgent', durationMs: Date.now() - start };
+        return {
+          toolName: 'teams_send_notification',
+          success: false,
+          output: '',
+          error: 'urgency must be one of: normal, high, urgent',
+          durationMs: Date.now() - start,
+        };
       }
 
       const accessToken = pluginConfig.teamsClientSecret as string;
       if (!accessToken) {
-        return { toolName: 'teams_send_notification', success: false, output: '', error: 'Teams not configured', durationMs: Date.now() - start };
+        return {
+          toolName: 'teams_send_notification',
+          success: false,
+          output: '',
+          error: 'Teams not configured',
+          durationMs: Date.now() - start,
+        };
       }
 
       const response = await fetch(
@@ -273,7 +489,11 @@ const teamsSendNotificationTool: Tool = {
           method: 'POST',
           headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            topic: { source: 'text', value: `Notification (${urgency})`, webUrl: 'https://teams.microsoft.com' },
+            topic: {
+              source: 'text',
+              value: `Notification (${urgency})`,
+              webUrl: 'https://teams.microsoft.com',
+            },
             activityType: 'systemDefault',
             previewText: { content: message },
             recipients: [{ '@odata.type': 'microsoft.graph.aadUserNotificationRecipient', userId }],
@@ -282,12 +502,31 @@ const teamsSendNotificationTool: Tool = {
       );
 
       if (!response.ok) {
-        return { toolName: 'teams_send_notification', success: false, output: '', error: `Teams API error: ${response.status}`, durationMs: Date.now() - start };
+        return {
+          toolName: 'teams_send_notification',
+          success: false,
+          output: '',
+          error: `Teams API error: ${response.status}`,
+          durationMs: Date.now() - start,
+        };
       }
 
-      return { toolName: 'teams_send_notification', success: true, output: `Notification sent to user ${userId}`, durationMs: Date.now() - start };
+      return {
+        toolName: 'teams_send_notification',
+        success: true,
+        output: `Notification sent to user ${userId}`,
+        durationMs: Date.now() - start,
+      };
     } catch (error) {
-      return { toolName: 'teams_send_notification', success: false, output: '', error: `Failed to send notification: ${error instanceof Error ? error.message : String(error)}`, durationMs: Date.now() - start };
+      return {
+        toolName: 'teams_send_notification',
+        success: false,
+        output: '',
+        error: `Failed to send notification: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+        durationMs: Date.now() - start,
+      };
     }
   },
 };
