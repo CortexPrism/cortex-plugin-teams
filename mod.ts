@@ -1,9 +1,4 @@
-import type {
-  PluginContext,
-  Tool,
-  ToolCallResult,
-  ToolContext,
-} from "./types.ts";
+import type { PluginContext, Tool, ToolCallResult } from "cortex/plugins";
 
 let pluginConfig: Record<string, unknown> = {};
 
@@ -49,7 +44,7 @@ const teamsSendMessageTool: Tool = {
   },
   execute: async (
     args: Record<string, unknown>,
-    _ctx: ToolContext,
+    _ctx: PluginContext,
   ): Promise<ToolCallResult> => {
     const start = Date.now();
     try {
@@ -191,7 +186,7 @@ const teamsReadMessagesTool: Tool = {
   },
   execute: async (
     args: Record<string, unknown>,
-    _ctx: ToolContext,
+    _ctx: PluginContext,
   ): Promise<ToolCallResult> => {
     const start = Date.now();
     try {
@@ -293,7 +288,7 @@ const teamsListChannelsTool: Tool = {
   },
   execute: async (
     args: Record<string, unknown>,
-    _ctx: ToolContext,
+    _ctx: PluginContext,
   ): Promise<ToolCallResult> => {
     const start = Date.now();
     try {
@@ -391,7 +386,7 @@ const teamsCreateMeetingTool: Tool = {
   },
   execute: async (
     args: Record<string, unknown>,
-    _ctx: ToolContext,
+    _ctx: PluginContext,
   ): Promise<ToolCallResult> => {
     const start = Date.now();
     try {
@@ -507,7 +502,7 @@ const teamsSendNotificationTool: Tool = {
   },
   execute: async (
     args: Record<string, unknown>,
-    _ctx: ToolContext,
+    _ctx: PluginContext,
   ): Promise<ToolCallResult> => {
     const start = Date.now();
     try {
